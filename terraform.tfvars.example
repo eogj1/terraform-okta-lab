@@ -1,0 +1,6 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored so your token is never committed.
+
+okta_org_name  = "dev-123456"   # your developer org subdomain
+okta_base_url  = "okta.com"     # developer orgs use okta.com
+okta_api_token = "REPLACE_ME"   # from Security > API > Tokens

@@ -1,0 +1,16 @@
+# Terraform state (may contain secrets, never commit)
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Provider plugins and local cache
+.terraform/
+.terraform.tfstate.lock.info
+
+# Variable files with real credentials
+*.tfvars
+!*.tfvars.example
+
+# Note: .terraform.lock.hcl SHOULD be committed. It pins provider versions
+# for reproducible runs, so it is intentionally not ignored here.

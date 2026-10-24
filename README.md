@@ -97,14 +97,13 @@ exists so drift can be detected and corrected.
   instead of local state.
 - Add a SAML app alongside the OIDC one to show both provisioning standards.
 
-## How this maps to interview questions
+## Concepts demonstrated
 
 - Config-as-code: this is declarative desired-state with drift detection and
   version control, the same mindset as MDM configuration profiles, applied to
   identity infrastructure.
-- Birthright / joiner-mover-leaver: the group rules are the showcase.
+- Birthright / joiner-mover-leaver: driven by the group rules.
 - Least privilege: group-based app assignment, not user-based.
 - Standards-based provisioning: OIDC app defined as code.
-- Honest framing: this is a personal lab built to go deeper on Terraform and
-  Okta. It is real hands-on work, not production experience at an employer, and
-  should be described that way.
+- Scope: this is a personal lab for hands-on practice with Terraform and Okta,
+  not a production deployment.

@@ -1,6 +1,6 @@
 # STRETCH GOAL, optional. Left commented so your first `terraform apply`
-# succeeds cleanly. Uncomment once the core resources apply and you want the
-# MFA talking point.
+# succeeds cleanly. Uncomment once the core resources apply and you want to
+# enforce MFA.
 #
 # NOTE: policy resource names and schemas differ across Okta provider major
 # versions and require MFA factors to be enabled in the org first

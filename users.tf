@@ -3,26 +3,19 @@
 # an HRIS attribute (Rippling, UKG Pro) feeding a joiner/mover/leaver flow:
 # change department, and access follows automatically.
 
-resource "okta_user" "eng_user" {
-  first_name = "Ada"
-  last_name  = "Engineer"
-  login      = "ada.engineer@example.com"
-  email      = "ada.engineer@example.com"
-  department = "Engineering"
-}
+resource "okta_user" "lab" {
+  for_each = var.users
 
-resource "okta_user" "sales_user" {
-  first_name = "Sam"
-  last_name  = "Seller"
-  login      = "sam.seller@example.com"
-  email      = "sam.seller@example.com"
-  department = "Sales"
-}
+  first_name = each.value.first_name
+  last_name  = each.value.last_name
+  login      = each.value.email
+  email      = each.value.email
+  department = var.departments[each.value.department]
 
-resource "okta_user" "it_user" {
-  first_name = "Ike"
-  last_name  = "Admin"
-  login      = "ike.admin@example.com"
-  email      = "ike.admin@example.com"
-  department = "IT"
+  lifecycle {
+    precondition {
+      condition     = contains(keys(var.departments), each.value.department)
+      error_message = "User ${each.key} has department \"${each.value.department}\", which is not a key in var.departments."
+    }
+  }
 }

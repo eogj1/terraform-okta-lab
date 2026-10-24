@@ -1,0 +1,36 @@
+name: terraform
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.9"
+
+      - name: fmt
+        run: terraform fmt -check -recursive -diff
+
+      - name: init
+        run: terraform init -backend=false -input=false
+
+      - name: validate
+        run: terraform validate
+
+      - name: test
+        run: terraform test
+
+      - uses: terraform-linters/setup-tflint@v4
+
+      - name: tflint
+        run: tflint --init && tflint --format compact

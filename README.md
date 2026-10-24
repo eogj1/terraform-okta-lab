@@ -23,7 +23,27 @@ evaluation. That is a joiner/mover/leaver flow expressed as code.
 1. A free Okta Developer account (developer.okta.com). The developer edition
    is free and supports the API and Terraform provider.
 2. An API token: Okta admin console > Security > API > Tokens > Create Token.
-3. Terraform >= 1.5 installed locally.
+3. Terraform >= 1.5 installed locally (>= 1.7 to run `terraform test`).
+
+## Repository layout
+
+| File | Purpose |
+| --- | --- |
+| `versions.tf` | Terraform and provider version constraints |
+| `providers.tf` | Okta provider configuration |
+| `variables.tf` | Connection settings plus the directory model (`departments`, `users`, `dashboard_department`) |
+| `groups.tf` | One Okta group per department |
+| `group_rules.tf` | One birthright rule per department |
+| `users.tf` | Test users |
+| `apps.tf` | OIDC app and its group assignment |
+| `policies.tf` | Optional MFA policy (commented out) |
+| `outputs.tf` | Group, rule, user, and app IDs |
+| `moved.tf` | State migrations from the original per-resource layout |
+| `tests/` | Offline `terraform test` suite using a mocked provider |
+
+Groups, rules, and users are generated with `for_each` from `var.departments`
+and `var.users`, so adding a department or user is a data change, not new
+resource blocks. Override either in `terraform.tfvars`.
 
 ## Run it
 
@@ -31,8 +51,17 @@ evaluation. That is a joiner/mover/leaver flow expressed as code.
 cp terraform.tfvars.example terraform.tfvars   # then edit in your values
 terraform init      # downloads the Okta provider, writes the lock file
 terraform plan      # review what will be created, nothing is applied yet
-terraform apply      # creates the resources after you confirm
-terraform destroy    # tears everything back down when you are done
+terraform apply     # creates the resources after you confirm
+terraform destroy   # tears everything back down when you are done
+```
+
+Checks (also run in CI on every push and pull request):
+
+```
+terraform fmt -check -recursive
+terraform validate
+terraform test       # offline, uses a mocked Okta provider
+tflint
 ```
 
 The plan/apply/destroy cycle is the whole point: desired state is defined in

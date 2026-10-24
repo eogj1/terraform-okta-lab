@@ -8,8 +8,19 @@ crash.*.log
 .terraform/
 .terraform.tfstate.lock.info
 
+# Saved plans (may contain sensitive values)
+*.tfplan
+tfplan
+
+# Local overrides
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
 # Variable files with real credentials
 *.tfvars
+*.tfvars.json
 !*.tfvars.example
 
 # Note: .terraform.lock.hcl SHOULD be committed. It pins provider versions

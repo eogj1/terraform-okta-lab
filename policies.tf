@@ -17,5 +17,5 @@
 #     enroll = "REQUIRED"
 #   }
 #
-#   groups_included = [okta_group.engineering.id]
+#   groups_included = [okta_group.department["engineering"].id]
 # }

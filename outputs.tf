@@ -1,15 +1,16 @@
-output "engineering_group_id" {
-  description = "ID of the Engineering group"
-  value       = okta_group.engineering.id
+output "group_ids" {
+  description = "IDs of the department groups, keyed by department"
+  value       = { for k, g in okta_group.department : k => g.id }
 }
 
 output "birthright_rule_ids" {
-  description = "IDs of the birthright group rules"
-  value = {
-    engineering = okta_group_rule.engineering_birthright.id
-    sales       = okta_group_rule.sales_birthright.id
-    it          = okta_group_rule.it_birthright.id
-  }
+  description = "IDs of the birthright group rules, keyed by department"
+  value       = { for k, r in okta_group_rule.birthright : k => r.id }
+}
+
+output "user_ids" {
+  description = "IDs of the test users, keyed by user"
+  value       = { for k, u in okta_user.lab : k => u.id }
 }
 
 output "dashboard_app_id" {

@@ -23,7 +23,28 @@ evaluation. That is a joiner/mover/leaver flow expressed as code.
 1. A free Okta Developer account (developer.okta.com). The developer edition
    is free and supports the API and Terraform provider.
 2. An API token: Okta admin console > Security > API > Tokens > Create Token.
-3. Terraform >= 1.5 installed locally.
+3. Terraform >= 1.5 installed locally (>= 1.7 to run `terraform test`).
+
+## Repository layout
+
+| File | Purpose |
+| --- | --- |
+| `versions.tf` | Terraform and provider version constraints |
+| `providers.tf` | Okta provider configuration |
+| `variables.tf` | Connection settings plus the directory model (`departments`, `users`, `dashboard_department`) |
+| `groups.tf` | One Okta group per department |
+| `group_rules.tf` | One birthright rule per department |
+| `users.tf` | Test users |
+| `apps.tf` | OIDC app and its group assignment |
+| `policies.tf` | Optional MFA policy (commented out) |
+| `outputs.tf` | Group, rule, user, and app IDs |
+| `moved.tf` | State migrations from the original per-resource layout |
+| `tests/unit/` | Offline `terraform test` suite using a mocked provider (runs in CI) |
+| `tests/integration/` | `terraform test` suite that applies to a real Okta org, then destroys (manual) |
+
+Groups, rules, and users are generated with `for_each` from `var.departments`
+and `var.users`, so adding a department or user is a data change, not new
+resource blocks. Override either in `terraform.tfvars`.
 
 ## Run it
 
@@ -31,8 +52,25 @@ evaluation. That is a joiner/mover/leaver flow expressed as code.
 cp terraform.tfvars.example terraform.tfvars   # then edit in your values
 terraform init      # downloads the Okta provider, writes the lock file
 terraform plan      # review what will be created, nothing is applied yet
-terraform apply      # creates the resources after you confirm
-terraform destroy    # tears everything back down when you are done
+terraform apply     # creates the resources after you confirm
+terraform destroy   # tears everything back down when you are done
+```
+
+Checks (also run in CI on every push and pull request):
+
+```
+terraform fmt -check -recursive
+terraform validate
+terraform test -test-directory=tests/unit   # offline, uses a mocked Okta provider
+tflint
+```
+
+Integration tests create and destroy `tftest`-prefixed resources in a real
+org, so they are not run in CI. Run them manually:
+
+```
+TF_VAR_okta_org_name=dev-123456 TF_VAR_okta_api_token=... \
+  terraform test -test-directory=tests/integration
 ```
 
 The plan/apply/destroy cycle is the whole point: desired state is defined in
@@ -59,14 +97,13 @@ exists so drift can be detected and corrected.
   instead of local state.
 - Add a SAML app alongside the OIDC one to show both provisioning standards.
 
-## How this maps to interview questions
+## Concepts demonstrated
 
 - Config-as-code: this is declarative desired-state with drift detection and
   version control, the same mindset as MDM configuration profiles, applied to
   identity infrastructure.
-- Birthright / joiner-mover-leaver: the group rules are the showcase.
+- Birthright / joiner-mover-leaver: driven by the group rules.
 - Least privilege: group-based app assignment, not user-based.
 - Standards-based provisioning: OIDC app defined as code.
-- Honest framing: this is a personal lab built to go deeper on Terraform and
-  Okta. It is real hands-on work, not production experience at an employer, and
-  should be described that way.
+- Scope: this is a personal lab for hands-on practice with Terraform and Okta,
+  not a production deployment.

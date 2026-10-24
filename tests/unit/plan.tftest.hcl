@@ -1,5 +1,5 @@
-# Offline tests: run with `terraform test`. Uses a mocked Okta provider, so no
-# org or API token is needed.
+# Unit tests: offline, mocked Okta provider, no org or API token needed.
+# Run with `terraform test -test-directory=tests/unit`.
 
 mock_provider "okta" {}
 

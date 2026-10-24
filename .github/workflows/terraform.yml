@@ -27,8 +27,8 @@ jobs:
       - name: validate
         run: terraform validate
 
-      - name: test
-        run: terraform test
+      - name: unit tests
+        run: terraform test -test-directory=tests/unit
 
       - uses: terraform-linters/setup-tflint@v4
 

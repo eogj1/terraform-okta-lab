@@ -39,7 +39,8 @@ evaluation. That is a joiner/mover/leaver flow expressed as code.
 | `policies.tf` | Optional MFA policy (commented out) |
 | `outputs.tf` | Group, rule, user, and app IDs |
 | `moved.tf` | State migrations from the original per-resource layout |
-| `tests/` | Offline `terraform test` suite using a mocked provider |
+| `tests/unit/` | Offline `terraform test` suite using a mocked provider (runs in CI) |
+| `tests/integration/` | `terraform test` suite that applies to a real Okta org, then destroys (manual) |
 
 Groups, rules, and users are generated with `for_each` from `var.departments`
 and `var.users`, so adding a department or user is a data change, not new
@@ -60,8 +61,16 @@ Checks (also run in CI on every push and pull request):
 ```
 terraform fmt -check -recursive
 terraform validate
-terraform test       # offline, uses a mocked Okta provider
+terraform test -test-directory=tests/unit   # offline, uses a mocked Okta provider
 tflint
+```
+
+Integration tests create and destroy `tftest`-prefixed resources in a real
+org, so they are not run in CI. Run them manually:
+
+```
+TF_VAR_okta_org_name=dev-123456 TF_VAR_okta_api_token=... \
+  terraform test -test-directory=tests/integration
 ```
 
 The plan/apply/destroy cycle is the whole point: desired state is defined in
